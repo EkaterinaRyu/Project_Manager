@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Система планирования проектов | Сотрудники</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <style>
+        h1, h4 {color: #55478d; text-shadow: 1px 1px 2px white;}
+    </style>
+</head>
+<body>
+<div class="bg-image"
+     style="background-image: url('https://static.vecteezy.com/system/resources/previews/006/970/888/original/digital-cyberspace-futuristic-purple-color-particles-wave-flowing-with-lines-and-dots-connection-technology-network-abstract-background-3d-rendering-free-photo.jpg'); height: 100vh; overflow: auto">
+    <header>
+        <div class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white border-bottom shadow-sm">
+            <h5 class="my-0 mr-md-auto font-weight-normal" style="padding: 0 30px 0 30px">Менеджер</h5>
+            <nav class="my-2 my-md-0 mr-md-3">
+                <a class="p-2 text-dark" href="/" style="margin: 20px; text-decoration: none">Проекты</a>
+                <a class="p-2 text-dark" href="/task" style="margin: 20px; text-decoration: none">Задачи</a>
+                <a class="p-2 text-dark" href="/staff" style="margin: 20px; text-decoration: none">Сотрудники</a>
+                <a class="p-2 text-dark" href="/complex_view" style="margin: 20px; text-decoration: none">Смешанная таблица</a>
+                <a class="p-2 text-dark" href="/author" style="margin: 20px; text-decoration: none">Об авторе</a>
+            </nav>
+            <a class="btn btn-outline-primary" href="/logout" style="position: absolute; top: 10px; right: 20px">Выйти</a>
+        </div>
+
+    </header>
+
+
+
+  <div>
+    <div class="col-md-8 offset-md-4">
+      <h4>Поиск:</h4>
+      <form th:action="@{/staff}">
+        <input type="text" name="keyword" id="keyword" size="50" th:value="${keyword}" required/>
+        <input type="submit" class="btn btn-success btn-sm" style="margin: 10px" value="Поиск"/>
+        <input type="button" class="btn btn-warning btn-sm" value="Очистить" id="btnClear"
+               onclick="clearSearch()"/>
+      </form>
+    </div>
+  </div>
+  <section>
+      <blockquote class="blockquote text-center">
+          <a href="/staff/new">
+              <button type="button" class="btn btn-primary" data-togge="button" aria-pressed="false" autocomplete="off">
+                  Добавить сотрудника
+              </button>
+          </a>
+      </blockquote>
+      <span style="margin: 20px 20px 20px 20px">
+          <span style="float: left; background-color: whitesmoke; margin: 20px 200px 20px 200px; border-radius: 25px">
+              <table>
+                  <tr th:each="staff: ${listStaff}">
+                      <th>
+                          <img th:src="${staff.picture}" alt="picture"  width="300" class="scale" />
+                      </th>
+                      <th width="450">
+                          <div style="margin: 20px 20px 20px 20px" >
+                              <p th:text="${staff.id}" style="font-weight: normal">ID отсутствует</p>
+                              <span th:text="${staff.first_name}" style="font-weight: bold">Имя отсутствует</span>
+                              <span th:text="${staff.last_name}" style="font-weight: bold">Фамилия отсутствует</span>
+                              <p th:text="${staff.birthdate}" style="font-weight: normal; margin-top: 16px">Дата рождения отсутствует</p>
+                              <p th:text="${staff.occupation}" style="font-weight: normal">Профессия отсутсвует</p>
+                              <p th:text="${staff.info}" style="font-weight: normal">Дополнительная информация отсутсвует</p>
+                          </div>
+                      </th>
+                      <th width="150">
+                          <p><a th:href="@{'/staff/edit/'+${staff.id}}"><button type="button" class="btn btn-info">Редактировать</button></a></p>
+                          <p><a th:href="@{'/staff/delete/'+${staff.id}}"><button type="button" class="btn btn-danger">Удалить</button></a></p>
+                      </th>
+                  </tr>
+          </table>
+          </span>
+      </span>
+
+  </section>
+  <p class="text-white" style="margin-left: 20px">
+    <script type="text/javascript">
+      // Функция подсчета количества записей в таблице
+      function getRowsColumn() {
+        let table = document.getElementById('1')
+        let tBody = table.querySelector('tbody')
+        const count = tBody.querySelectorAll('tr').length;
+        document.write('Количество сотрудников в таблице: ' + count)
+      }
+
+      getRowsColumn()
+    </script>
+  </p>
+  <div id="chart_div1" align="center"></div>
+  <div id="chart_div2" align="center"></div>
+</div>
+<script type="text/javascript">
+  // Функция очистки поля поиска
+  function clearSearch() {
+    window.location = "[[@{/staff}]]";
+  }
+
+  // Алгоритм сортировки каждого из столбцов
+  // Запрашиваем таблицу
+  const table = document.getElementById('1');
+
+  // Получить заголовки
+  const headers = table.querySelectorAll('thead th');
+
+  // Обойти циклом все заголовки
+  [].forEach.call(headers, function(header, index) {
+    header.addEventListener('click', function() {
+      // Эта функция будет выполнять сортировку
+      sortColumn(index);
+    });
+  });
+
+  //Запросить все строки
+  const tableBody = table.querySelector('tbody');
+  const rows = tableBody.querySelectorAll('tr');
+
+  const sortColumn = function(index) {
+    // Клонируем все строки
+    const newRows = Array.from(rows);
+
+    // Сортируем строки по содержимому ячеек. Массив предоставляет встроенный метод сортировки, который принимает функцию для сравнения двух элементов. Здесь две ячейки столбца сравниваются на основе их HTML-содержимого
+    newRows.sort(function(rowA, rowB) {
+      // Получаем содержимое ячеек
+      const cellA = rowA.querySelectorAll('th')[index].innerHTML;
+      const cellB = rowB.querySelectorAll('th')[index].innerHTML;
+
+      // Дополнительная проверка для дат
+      if (cellA.includes("-")) {
+        switch (true) {
+          case Date.parse(cellA) > Date.parse(cellB): return 1;
+          case Date.parse(cellA) < Date.parse(cellB): return -1;
+          case Date.parse(cellA) === Date.parse(cellB): return 0;
+        }
+      } else {
+        switch (true) {
+          case cellA > cellB: return 1;
+          case cellA < cellB: return -1;
+          case cellA === cellB: return 0;
+        }
+      }
+    });
+
+    // Удаляем старые строки
+    [].forEach.call(rows, function(row) {
+      tableBody.removeChild(row);
+    });
+
+    // Добавляем новую строку
+    newRows.forEach(function(newRow) {
+      tableBody.appendChild(newRow);
+    });
+  };
+</script>
+
+</body>
+</html>

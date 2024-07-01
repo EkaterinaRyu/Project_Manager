@@ -1,0 +1,53 @@
+drop database project;
+create database project;
+use project;
+create table staff 
+(
+id int not null auto_increment,
+first_name varchar(255),
+last_name varchar(255) default 'Unknown',
+occupation varchar(255),
+birthdate date default '1990-01-01',
+picture varchar(255),
+info varchar(255),
+primary key (id)
+);
+create table project 
+(
+id int not null auto_increment,
+project_name varchar(255) not null,
+goal text(4000),
+field varchar(255),
+budget numeric(18, 2),
+primary key (id)
+);
+create table task 
+(
+id int not null auto_increment,
+task_name varchar(255) not null,
+notes text, 
+deadline date default '2000-01-01',
+project_id int,
+staff_id int,
+primary key (id),
+foreign key (project_id) references project(id),
+foreign key (staff_id) references staff(id)
+);
+
+insert into project(project_name, goal, field, budget)
+values ('В ожидании Страшного суда', 'Реставрация Сикстинской капеллы, Ватикан', 'Искусство', 13453.90),
+('Будущее завтра', 'Внедрение систем ИИ в начальных классах', 'Образование', 34523),
+('Зарыбление', 'Восстановление экосистемы Ведьминого озера, Краснодарский край', 'Экология', 342559),
+('название', 'цель', 'сфера', 0);
+
+insert into staff(first_name, last_name, occupation, picture)
+values ('Иван', 'Иванов', 'шпион', 'http://i.stack.imgur.com/SBv4T.gif'),
+('Екатерина', 'Рю', 'штурман', 'https://i.pinimg.com/originals/9a/68/93/9a6893116afd5be6a058ecebadcd5672.gif'),
+('Матвей', 'Симонов', 'актер', 'https://i.pinimg.com/originals/27/f4/c3/27f4c34b0733a33035f0747430e8608a.gif'),
+('Георгий', 'Неизвестный', 'поэт', 'https://media.tenor.com/9OdM87X8xngAAAAC/pokemon.gif');
+
+insert into task(task_name, notes, deadline, project_id, staff_id)
+values ('Купить краску', 'лучше итальянскую', '2023-05-12', 1, 1),
+('Нанять художника', 'наследника Микеланджело', '2023-02-17', 1, 1),
+('Купить икру', 'Карп, сом, окунь', '2023-05-12', 2, 4),
+('помогите', 'пожалуйста', '2023-02-17', 2, 3);
